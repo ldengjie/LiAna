@@ -1,0 +1,9 @@
+1.the fit of number is different from IBDSel ,because of different neutron-like definition :
+    LiAna  : 1.8~2.8 6~12
+    IBDSel : 1.8~12
+    
+
+
+2.Li spectrum , P12A P12E P13A time is float
+                P14A time is double!!!
+                modify it in LiTree.h
