@@ -425,49 +425,6 @@ int fitHisto(int siteNum,string dataVer)
 	return 0;
 }
 
-/*
-int anaTree(int siteNum,vector<string> dataVer)
-{
-	gROOT->ProcessLine(".L LiTree.C+");
-	TChain chain("Tree/LiTree");
-	string site;
-    if( siteNum==1 )
-	{   
-	    site="EH1";
-	} else if(siteNum==2)
-	{   
-	    site="EH2";
-	}else if (siteNum==3)
-	{   
-	    site="EH3";
-	}else
-	{   
-	    site="EH1";
-	} 
-
-	string chainFile;
-	
-    chainFile="/afs/ihep.ac.cn/users/l/lidj/largedata/LiAna/";
-    chainFile+=dataVer;
-    chainFile+="/";
-    chainFile+=site;
-    chainFile+="/*LiAna.root";
-    chain.Add(chainFile.c_str());
-    if( dataVer=="P12E" )
-    {
-        chainFile="/afs/ihep.ac.cn/users/l/lidj/largedata/LiAna/";
-        chainFile+="P12A";
-        chainFile+="/";
-        chainFile+=site;
-        chainFile+="/*LiAna.root";
-        chain.Add(chainFile.c_str());
-    }
-    string  siteAndDataVer=site+dataVer;
-    std::cout<<"site And DataVer  : "<<siteAndDataVer<<endl;
-	chain.Process("LiTree",siteAndDataVer.c_str());
-	return 0;
-}
-*/
 vector<string> checkdata(string dataVer)
 {
     string dataIsGood="1";

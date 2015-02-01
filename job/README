@@ -1,9 +1,41 @@
-1.the fit of number is different from IBDSel ,because of different neutron-like definition :
-    LiAna  : 1.8~2.8 6~12
-    IBDSel : 1.8~12
-    
+how to use this script?
+
+WARNING: 'source ~/.thisroot.sh'!!! no use 'sn'
+
+GenIsoSpec.C 
+    #run in ROOT
+        1 root -l
+        2 .L GenIsoSpec.C+
+        3 GenIsoSpec("P14A") or GenIsoSpec("P14A",1)
+GenIsoSpec.main.C 
+    #run on server ,should be synchronized with 'GenIsoSpec.C' by hand. 
+        0 gcmR GenIsoSpec.main
+        1 ./GenIsoSpec.main P14A 2  >*log
+        2 submit to server. so you can make a job*.csh ,e.g. job/GenData_P14A_EH*.csh ,and submit it to server 'qusb -q dybshortq GenData_P14A_EH*.csh',these submits have been listed in 'GenData_submit.csh',so just 'source GenData_submit.csh'
+
+SingleTree.C  SingleTree.h
+    #above two programs all need this file's *.so,I can't make this file into .so separatly,so you should run 'GenIsoSpec.C',then you can run 'GenIsoSpec.main.C'
+
+IsoNumFit.C
+    #multiplt slices ? simultaneous fit?
+        1 gcmR IsoNumFit
+        2 ./IsoNumFit P14A 2 C9 0 0 50 // dataVer, siteNum=0, FitMode="B12", doSimFit=1, FitLowRange, FitHighRange
+        3 submit to server. the job scripts are job/multiJob/*.csh ,you can submit them to server by 'source multi_submit.sh',or 'source multi_submit_64.sh'--dyb64q and 'source multi_submit_s.sh'--dybshortq
+    #six slices
+        1 gcmR IsoNumFit or press <F8> in vim
+        2 ./IsoNumFit P14A 1 B12 1>*log or ./IsoNumFit P14A 1 B12 1 | tee *log
+        3 submit to server. 'source submit.csh'
+
+Required data:
+        <SingleTree.C>    
+        in : #P14A/EH3totalHisto_P14A.root# -> calculated signalFrac/offFrac
+        out: P14A/EH3iso_P14A.root  -> contained timepdf energSpecPdf
+        <GenIsoSpec.C>
+        in : /afs/ihep.ac.cn/users/l/lidj/largedata/IsotopesAna/P14A/EH3/*IsotopesAna.root -> prepared for SingleTree.C
+        <IsoNumFit.C> 
+        in : P14A/EH3iso_P14A.root <- got timepdf energSpecPdf
+             #IsoTheoreticalSpec.root# <- got Theoretical energy Spec
+             #P14A/EH3totalHisto_P14A.root# -> calculated live time
+        TIPS:#P14A/EH3totalHisto_P14A.root# is same with #/afs/ihep.ac.cn/users/l/lidj/largedata/IsotopesAna/P14A/EH3/P14AEH3_hists.root#
 
 
-2.Li spectrum , P12A P12E P13A time is float
-                P14A time is double!!!
-                modify it in LiTree.h
