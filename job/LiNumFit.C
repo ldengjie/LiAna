@@ -80,7 +80,9 @@ int fitHisto(int siteNum,string dataVer)
 
 //===>get histograms from .root file for analyse
 	string filename;
-    filename=site;
+    filename=dataVer;
+    filename+="/";
+    filename+=site;
     filename+="mergedHist_";
     filename+=dataVer;
     filename+=".root";
@@ -117,10 +119,12 @@ int fitHisto(int siteNum,string dataVer)
                 TString hnameLi;
                 hnameLi="lidj/showermuonNum";
                 hnameLi+=i+1;
+                //hnameLi+="NoRed";
                 showermuonNum[i]=(TH1F*)f->Get(hnameLi);
                 hnameLi="lidj/time2lastshowermuon";
                 hnameLi+=i+1;
                 hnameLi+="4Li";
+                //hnameLi+="NoRed";
                 time2lastshowermuon[i]=(TH1F*)f->Get(hnameLi);
             }
 		}
@@ -425,162 +429,12 @@ int fitHisto(int siteNum,string dataVer)
 	return 0;
 }
 
-/*
-int anaTree(int siteNum,vector<string> dataVer)
-{
-	gROOT->ProcessLine(".L LiTree.C+");
-	TChain chain("Tree/LiTree");
-	string site;
-    if( siteNum==1 )
-	{   
-	    site="EH1";
-	} else if(siteNum==2)
-	{   
-	    site="EH2";
-	}else if (siteNum==3)
-	{   
-	    site="EH3";
-	}else
-	{   
-	    site="EH1";
-	} 
-
-	string chainFile;
-	
-    chainFile="/afs/ihep.ac.cn/users/l/lidj/largedata/LiAna/";
-    chainFile+=dataVer;
-    chainFile+="/";
-    chainFile+=site;
-    chainFile+="/*LiAna.root";
-    chain.Add(chainFile.c_str());
-    if( dataVer=="P12E" )
-    {
-        chainFile="/afs/ihep.ac.cn/users/l/lidj/largedata/LiAna/";
-        chainFile+="P12A";
-        chainFile+="/";
-        chainFile+=site;
-        chainFile+="/*LiAna.root";
-        chain.Add(chainFile.c_str());
-    }
-    string  siteAndDataVer=site+dataVer;
-    std::cout<<"site And DataVer  : "<<siteAndDataVer<<endl;
-	chain.Process("LiTree",siteAndDataVer.c_str());
-	return 0;
-}
-*/
-vector<string> checkdata(string dataVer)
-{
-    string dataIsGood="1";
-    string verNum[6]={"11","12","13","14","15","16"};
-    vector<string> dataVerReal;
-    for( int i=0 ; i<6 ; i++ )
-    {
-        int pos=0;
-        string TmpVer;
-        TmpVer=dataVer.substr(pos);
-        while( pos!=-1 )
-        {
-            pos=TmpVer.find(verNum[i]);
-            if( pos!=-1 )
-            {
-                string subdataVer;
-                subdataVer="P"+verNum[i];
-                subdataVer+=toupper(*(TmpVer.substr(pos+2,1).c_str()));
-                for( vector<string>::iterator it=dataVerReal.begin() ; it!=dataVerReal.end() ; ++it  )
-                {
-                    if( *it==subdataVer )
-                    {
-                        dataVerReal.erase(it);
-                        it--;
-                    }
-                }
-                dataVerReal.push_back(subdataVer);
-                TmpVer=TmpVer.substr(pos+3);
-            }
-        }
-    }
-    sort(dataVerReal.begin(),dataVerReal.end());
-
-    std::cout<<" "<<endl;
-    std::cout<<"Find following data version will be analysed : "<<endl;
-    std::cout<<" "<<endl;
-    string runlistSiteNum[3]={"EH1","EH2","EH3"};
-    vector<string> runlistFileContent[3];
-    for( int i=0 ; i<3 ; i++ )
-    {
-        runlistFileContent[i].clear();
-    }
-    string verSuf;
-    for( vector<string>::iterator it=dataVerReal.begin() ; it!=dataVerReal.end() ; ++it )
-    {
-        std::cout<<*it<<endl;
-        verSuf+="_"+*it;
-        //check data path
-        string datadir="/afs/ihep.ac.cn/users/l/lidj/largedata/LiAna/";
-        DIR *dir=NULL;
-        datadir+=*it;
-        dir = opendir(datadir.c_str());
-        if( dir==NULL )
-        {
-            std::cout<<" !!! data dir doesn't exist : "<<datadir<<endl;
-            dataIsGood="0";
-        } else
-        {
-            std::cout<<" data dir exist : "<<datadir<<endl;
-            closedir(dir);
-        }
-
-        
-        std::cout<<" "<<endl;
-    }
-        //check merged file 
-        for( int i=0 ; i<3 ; i++ )
-        {
-            string runlistName=runlistSiteNum[i]+"mergedHist";
-            runlistName+=verSuf;
-            //runlistName+=*it;
-            runlistName+=".root";
-            TFile *ff = new TFile(runlistName.c_str());
-            if( ff->IsZombie() )
-            {
-                std::cout<<" !!! merged file doesn't exist  : "<<runlistName<<endl;
-                /*
-                if( *it!="P12A" )
-                {
-                    dataIsGood="0";
-                }
-                */
-            } else
-            {
-                std::cout<<" merged file exist  : "<<runlistName<<endl;
-            }
-            ff->Close();
-        }
-    verSuf=verSuf.substr(1);
-    std::cout<<"data version : "<<verSuf<<endl;
-
-    dataVerReal.push_back(verSuf);
-    dataVerReal.push_back(dataIsGood);
-    
-    return dataVerReal; 
-}
 int LiNumFit(string dataVer,int siteNum=0)
 {
-    vector<string> dataVerVec=checkdata(dataVer);
     std::cout<<" "<<endl;
     std::cout<<" "<<endl;
     std::cout<<" "<<endl;
     std::cout<<" "<<endl;
-    dataVer=dataVerVec[dataVerVec.size()-2];
-    if( dataVerVec[dataVerVec.size()-1]=="0" )
-    {
-        std::cout<<"  The dataVerion["<<dataVer<<"] or data is wrong ,please check! "<<endl;
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-        return 0;
-    }
 
     if( siteNum==0 )
     {
@@ -594,13 +448,6 @@ int LiNumFit(string dataVer,int siteNum=0)
             std::cout<<" "<<endl;
             std::cout<<" "<<endl;
             std::cout<<" "<<endl;
-
-            std::cout<<"====> begin to analyse EH"<<i<<"'s IbdNum ,fast neutron"<<endl;
-            //anaTree(i,dataVerVec);
-            std::cout<<" "<<endl;
-            std::cout<<" "<<endl;
-            std::cout<<" "<<endl;
-            std::cout<<" "<<endl;
         }
         
     }else if(siteNum>=1 && siteNum<=3)
@@ -609,13 +456,6 @@ int LiNumFit(string dataVer,int siteNum=0)
         std::cout<<"====> begin to analyse EH"<<siteNum<<"'s DaqTime,He8/Li9 "<<endl;
         std::cout<<"dataVersion  : "<<dataVer<<endl;
         fitHisto(siteNum,dataVer);
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-        std::cout<<" "<<endl;
-
-        std::cout<<"====> begin to analyse EH"<<siteNum<<"'s IbdNum ,fast neutron"<<endl;
-        //anaTree(siteNum,dataVerVec);
         std::cout<<" "<<endl;
         std::cout<<" "<<endl;
         std::cout<<" "<<endl;
