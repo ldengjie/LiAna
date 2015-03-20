@@ -180,10 +180,12 @@ int fitHisto(int siteNum,string dataVer)
 
 	//Li He
     std::cout<<"begin to analyse Li "<<endl;
+    double lowEdge=0.001;
+    double highEdge=99.001;
 	if(anaLiHe)
 	{
-        int hnum_h=time2lastshowermuon[0]->FindBin(99.001);
-        int hnum_l=time2lastshowermuon[0]->FindBin(0.001);
+        int hnum_h=time2lastshowermuon[0]->FindBin(highEdge);
+        int hnum_l=time2lastshowermuon[0]->FindBin(lowEdge);
         //std::cout<<"0.001  : "<<time2lastshowermuon[0]->FindBin(0.001)<<endl;
         //std::cout<<"100  : "<<time2lastshowermuon[0]->FindBin(100)<<endl;
         //std::cout<<"hnum  : "<<hnum<<endl;
@@ -191,7 +193,7 @@ int fitHisto(int siteNum,string dataVer)
         {
             TString hhname="slice";
             hhname+=k+1;
-            hh[k]=new TH1F(hhname,"hh",hnum_h-hnum_l,0.001,99.001);
+            hh[k]=new TH1F(hhname,"hh",hnum_h-hnum_l,lowEdge,highEdge);
                 for( int i=1 ; i<=hnum_h-hnum_l ; i++ )
                 {
                     hh[k]->SetBinContent(i,time2lastshowermuon[k]->GetBinContent(hnum_l+i-1));
@@ -209,7 +211,7 @@ int fitHisto(int siteNum,string dataVer)
 		double RateMuon[6]={0.};
 		double NumIbd[6]={0.};
         
-		RooRealVar x("x","x",0.001,40., "s");
+		RooRealVar x("x","x",lowEdge,40., "s");
 		RooRealVar tauLi9("tauLi9", "tauLi9", -0.257, "s");
 		RooRealVar tauHe8("tauHe8", "tauHe8", -0.172, "s");
 		RooRealVar rateMu("rateMu","rate of showermuon",-0.1,-10., 0.,"Hz");
