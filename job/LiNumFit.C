@@ -81,7 +81,7 @@ int fitHisto(int siteNum,string dataVer)
 //===>get histograms from .root file for analyse
 	string filename;
     filename=dataVer;
-    filename+="/";
+    filename+="/five/";
     filename+=site;
     filename+="mergedHist_";
     filename+=dataVer;
@@ -182,7 +182,8 @@ int fitHisto(int siteNum,string dataVer)
     std::cout<<"begin to analyse Li "<<endl;
 	if(anaLiHe)
 	{
-        int hnum=time2lastshowermuon[0]->FindBin(100);
+        int hnum_h=time2lastshowermuon[0]->FindBin(99.001);
+        int hnum_l=time2lastshowermuon[0]->FindBin(0.001);
         //std::cout<<"0.001  : "<<time2lastshowermuon[0]->FindBin(0.001)<<endl;
         //std::cout<<"100  : "<<time2lastshowermuon[0]->FindBin(100)<<endl;
         //std::cout<<"hnum  : "<<hnum<<endl;
@@ -190,10 +191,10 @@ int fitHisto(int siteNum,string dataVer)
         {
             TString hhname="slice";
             hhname+=k+1;
-            hh[k]=new TH1F(hhname,"hh",hnum-2,0.001,100);
-                for( int i=1 ; i<hnum-2 ; i++ )
+            hh[k]=new TH1F(hhname,"hh",hnum_h-hnum_l,0.001,99.001);
+                for( int i=1 ; i<=hnum_h-hnum_l ; i++ )
                 {
-                    hh[k]->SetBinContent(i,time2lastshowermuon[k]->GetBinContent(i+1));
+                    hh[k]->SetBinContent(i,time2lastshowermuon[k]->GetBinContent(hnum_l+i-1));
                 }
                 hh[k]->SetOption("E1");
         }
